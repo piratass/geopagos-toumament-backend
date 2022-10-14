@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name="T_STAGE")
+@Table(name="t_stage")
 @Data
 public class Stage {
     @Id

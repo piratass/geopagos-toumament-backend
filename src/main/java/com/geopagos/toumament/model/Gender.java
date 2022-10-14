@@ -11,7 +11,7 @@ import javax.persistence.Column;
 import java.util.Date;
 
 @Entity
-@Table(name="T_GENDER")
+@Table(name="t_gender")
 @Data
 public class Gender {
 
@@ -21,8 +21,8 @@ public class Gender {
     private Integer idGender;
     @Column(name="code")
     private String code;
-    @Column(name="name")
-    private String name;
+    @Column(name="namegender")
+    private String nameGender;
     @Column(name="state")
     private Boolean state;
     @Column(name="registrationDate")

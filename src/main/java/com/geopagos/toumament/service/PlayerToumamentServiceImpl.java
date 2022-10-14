@@ -29,10 +29,9 @@ public class PlayerToumamentServiceImpl implements PlayerToumamentService{
     final ToumamentPlayerRepository toumamentPlayerRepository;
     @Override
     public PlayerResultResponseDTO playerResultWin(List<PlayersDataRequestDTO> listPlayersDataRequestDTO) {
-        if(listPlayersDataRequestDTO!=null)
-            throw new GeopagosToumamentGenericClientException("Not found List player");
-        playerSkillRepository.deleteAll();
-        playerRepository.deleteAll();
+        /*playerSkillRepository.deleteAll();
+        toumamentPlayerRepository.deleteAll();
+        playerRepository.deleteAll();*/
 
         List<PlayersDTO> listPlayersM =new ArrayList<>();
         List<PlayersDTO> listPlayersF =new ArrayList<>();
@@ -40,28 +39,17 @@ public class PlayerToumamentServiceImpl implements PlayerToumamentService{
         listPlayersDataRequestDTO.forEach(playerData->{
             Gender gender= genderRepository.findGenderByCodeAndState(playerData.getCodeGender(), GeopagosToumamentConstants.RESOURCE_ACTIVE).orElseThrow(() ->
                     new GeopagosToumamentGenericClientException("Error  atribute Genger List Player"));
-            PlayersDTO player =new PlayersDTO();
-            player.setGender(gender);
+
            if (playerData.getCodeGender().equals(GeopagosToumamentConstants.GENDER_MALE)){
                if(playerData.getSkills().size()==2){
-                    player.setFullname(playerData.getFullname());
-                    player.setDocumentNumber(playerData.getDocumentNumber());
-                    player.setState(GeopagosToumamentConstants.RESOURCE_ACTIVE);
-                    player.setRegistrationDate(new Date());
-                    player.setSkills(playerData.getSkills());
-                    listPlayersM.add(player);
+                   listPlayersM.add(geopagosToumamentUtil.convertObjPlayerDTO(playerData,gender));
                }
                else
                    throw new GeopagosToumamentGenericClientException("Error Skill Male conflict");
            }
            else {
                if(playerData.getSkills().size()==1) {
-                   player.setFullname(playerData.getFullname());
-                   player.setDocumentNumber(playerData.getDocumentNumber());
-                   player.setState(GeopagosToumamentConstants.RESOURCE_ACTIVE);
-                   player.setRegistrationDate(new Date());
-                   player.setSkills(playerData.getSkills());
-                   listPlayersF.add(player);
+                  listPlayersF.add(geopagosToumamentUtil.convertObjPlayerDTO(playerData,gender));
                }
                else
                    throw new GeopagosToumamentGenericClientException("Error Skill Feminile conflict");
@@ -70,51 +58,24 @@ public class PlayerToumamentServiceImpl implements PlayerToumamentService{
         //validation player and save tables
         if(geopagosToumamentUtil.validatePowTwo(listPlayersM.size())){
             listPlayersM.forEach(playerM->{
-                Player player =new Player();
-                player.setFullname(playerM.getFullname());
-                player.setGender(playerM.getGender());
-                player.setDocumentNumber(playerM.getDocumentNumber());
-                player.setState(playerM.getState());
-                player.setRegistrationDate(playerM.getRegistrationDate());
-                player=playerRepository.save(player);
+                Player player=playerRepository.save(geopagosToumamentUtil.convertEntityPlayer(playerM));
+
                 for (SkillDTO skillDTO:playerM.getSkills()) {
                     Skill skill=skillRepository.findSkillByCodeAndState(skillDTO.getCodeSkill(),GeopagosToumamentConstants.RESOURCE_ACTIVE).orElseThrow(() ->
-                            new GeopagosToumamentGenericClientException("Error  atribute Skills List Player"));;
-                    PlayerSkill playerSkill =new PlayerSkill();
-                    playerSkill.setPlayer(player);
-                    playerSkill.setSkill(skill);
-                    playerSkill.setLevelUpdate(skillDTO.getValue());
-                    playerSkill.setDescription("");
-                    playerSkill.setState(GeopagosToumamentConstants.RESOURCE_ACTIVE);
-                    playerSkill.setRegistrationDate(new Date());
-                    playerSkillRepository.save(playerSkill);
+                            new GeopagosToumamentGenericClientException("Error  atribute Skills List Player"));
+                    playerSkillRepository.save( geopagosToumamentUtil.convertEntityPlayerSkill(player,skill,skillDTO.getValue()));
                 }
             });
-
-
         }else{
             throw new GeopagosToumamentGenericClientException("Error list player Male Not pow 2 ");
         }
         if(geopagosToumamentUtil.validatePowTwo(listPlayersF.size())){
             listPlayersF.forEach(playerF->{
-                Player player =new Player();
-                player.setFullname(playerF.getFullname());
-                player.setGender(playerF.getGender());
-                player.setDocumentNumber(playerF.getDocumentNumber());
-                player.setState(playerF.getState());
-                player.setRegistrationDate(playerF.getRegistrationDate());
-                player=playerRepository.save(player);
+                Player player=playerRepository.save(geopagosToumamentUtil.convertEntityPlayer(playerF));
                 for (SkillDTO skillDTO:playerF.getSkills()) {
                     Skill skill=skillRepository.findSkillByCodeAndState(skillDTO.getCodeSkill(),GeopagosToumamentConstants.RESOURCE_ACTIVE).orElseThrow(() ->
                             new GeopagosToumamentGenericClientException("Error  atribute Skills List Player"));;
-                    PlayerSkill playerSkill =new PlayerSkill();
-                    playerSkill.setPlayer(player);
-                    playerSkill.setSkill(skill);
-                    playerSkill.setLevelUpdate(skillDTO.getValue());
-                    playerSkill.setDescription("");
-                    playerSkill.setState(GeopagosToumamentConstants.RESOURCE_ACTIVE);
-                    playerSkill.setRegistrationDate(new Date());
-                    playerSkillRepository.save(playerSkill);
+                    playerSkillRepository.save( geopagosToumamentUtil.convertEntityPlayerSkill(player,skill,skillDTO.getValue()));
                 }
             });
         }else{
@@ -136,6 +97,8 @@ public class PlayerToumamentServiceImpl implements PlayerToumamentService{
         Toumament toumamentFeminile =toumamentRepository.findToumamentByGenderAndState(genderFeminile,GeopagosToumamentConstants.RESOURCE_ACTIVE).orElseThrow(() ->
                 new GeopagosToumamentGenericClientException("Error  atribute Genger List Player"));
         iterationPlayer(listPlayerFeminile,toumamentFeminile,1);
+
+        //execute result data
         return null;
     }
 
@@ -144,7 +107,6 @@ public class PlayerToumamentServiceImpl implements PlayerToumamentService{
         Integer midPlayer=listPlayer.size()/2;
 
         if( midPlayer==1){
-            ToumamentPlayer toumamentPlayer = new ToumamentPlayer();
             Player player1=listPlayer.get(0);
             List<PlayerSkill> listPlayerSkill1 =playerSkillRepository.findPlayerSkillByPlayerAndState(player1,GeopagosToumamentConstants.RESOURCE_ACTIVE);
             Double sumSkill1 = listPlayerSkill1.stream().mapToDouble(PlayerSkill::getLevelUpdate).sum();
@@ -155,38 +117,20 @@ public class PlayerToumamentServiceImpl implements PlayerToumamentService{
             Double sumSkill2 = listPlayerSkill2.stream().mapToDouble(PlayerSkill::getLevelUpdate).sum();
             Double resultPlayer2= sumSkill2+ Math.random();
 
-
-            toumamentPlayer.setPlayer1(player1);
-            toumamentPlayer.setPlayer2(player2);
-            toumamentPlayer.setToumament(toumament);
-            toumamentPlayer.setStage(stage);
-            toumamentPlayer.setState(GeopagosToumamentConstants.RESOURCE_ACTIVE);
-            toumamentPlayer.setRegistrationDate(new Date());
             if(resultPlayer1>resultPlayer2)
             {
-                toumamentPlayer.setIdWinPlayer(player1.getIdPlayer());
-                toumamentPlayer.setLocalResult(resultPlayer1.intValue());
-                toumamentPlayer.setVisitResult(resultPlayer2.intValue());
-                toumamentPlayerRepository.save(toumamentPlayer);
+                toumamentPlayerRepository.save(geopagosToumamentUtil.convertEntityToumament(player1,player2,toumament,player1.getIdPlayer(),stage,resultPlayer1,resultPlayer2));
 
-            }
-            if(resultPlayer1==resultPlayer2){
-                toumamentPlayer.setIdWinPlayer(player2.getIdPlayer());
-                toumamentPlayer.setLocalResult(resultPlayer1.intValue());
-                toumamentPlayer.setVisitResult(resultPlayer2.intValue()+1);
-                toumamentPlayerRepository.save(toumamentPlayer);
+            }else if(resultPlayer1==resultPlayer2){
+                toumamentPlayerRepository.save(geopagosToumamentUtil.convertEntityToumament(player1,player2,toumament,player2.getIdPlayer(),stage,resultPlayer1,resultPlayer2));
             }
             else {
-                toumamentPlayer.setIdWinPlayer(player2.getIdPlayer());
-                toumamentPlayer.setLocalResult(resultPlayer1.intValue());
-                toumamentPlayer.setVisitResult(resultPlayer2.intValue());
-                toumamentPlayerRepository.save(toumamentPlayer);
+                toumamentPlayerRepository.save(geopagosToumamentUtil.convertEntityToumament(player1,player2,toumament,player2.getIdPlayer(),stage,resultPlayer1,resultPlayer2));
             }
         }
 
         else{
-            while(contPlayerFixture!= midPlayer){
-                ToumamentPlayer toumamentPlayer = new ToumamentPlayer();
+            while(contPlayerFixture!= midPlayer+1){
                 Player player1=listPlayer.get(contPlayerFixture-1);
                 List<PlayerSkill> listPlayerSkill1 =playerSkillRepository.findPlayerSkillByPlayerAndState(player1,GeopagosToumamentConstants.RESOURCE_ACTIVE);
                 Double sumSkill1 = listPlayerSkill1.stream().mapToDouble(PlayerSkill::getLevelUpdate).sum();
@@ -197,35 +141,19 @@ public class PlayerToumamentServiceImpl implements PlayerToumamentService{
                 Double sumSkill2 = listPlayerSkill2.stream().mapToDouble(PlayerSkill::getLevelUpdate).sum();
                 Double resultPlayer2= sumSkill2+ Math.random();
 
-                toumamentPlayer.setPlayer1(player1);
-                toumamentPlayer.setPlayer2(player2);
-                toumamentPlayer.setToumament(toumament);
-                toumamentPlayer.setStage(stage);
-                toumamentPlayer.setState(GeopagosToumamentConstants.RESOURCE_ACTIVE);
-                toumamentPlayer.setRegistrationDate(new Date());
                 if(resultPlayer1>resultPlayer2)
                 {
-                    toumamentPlayer.setIdWinPlayer(player1.getIdPlayer());
-                    toumamentPlayer.setLocalResult(resultPlayer1.intValue());
-                    toumamentPlayer.setVisitResult(resultPlayer2.intValue());
-                    toumamentPlayerRepository.save(toumamentPlayer);
+                    toumamentPlayerRepository.save(geopagosToumamentUtil.convertEntityToumament(player1,player2,toumament,player1.getIdPlayer(),stage,resultPlayer1,resultPlayer2));
 
-                }
-                if(resultPlayer1==resultPlayer2){
-                    toumamentPlayer.setIdWinPlayer(player2.getIdPlayer());
-                    toumamentPlayer.setLocalResult(resultPlayer1.intValue());
-                    toumamentPlayer.setVisitResult(resultPlayer2.intValue()+1);
-                    toumamentPlayerRepository.save(toumamentPlayer);
+                }else if(resultPlayer1==resultPlayer2){
+                    toumamentPlayerRepository.save(geopagosToumamentUtil.convertEntityToumament(player1,player2,toumament,player2.getIdPlayer(),stage,resultPlayer1,resultPlayer2));
                 }
                 else {
-                    toumamentPlayer.setIdWinPlayer(player2.getIdPlayer());
-                    toumamentPlayer.setLocalResult(resultPlayer1.intValue());
-                    toumamentPlayer.setVisitResult(resultPlayer2.intValue());
-                    toumamentPlayerRepository.save(toumamentPlayer);
+                    toumamentPlayerRepository.save(geopagosToumamentUtil.convertEntityToumament(player1,player2,toumament,player2.getIdPlayer(),stage,resultPlayer1,resultPlayer2));
                 }
                 contPlayerFixture=contPlayerFixture+1;
             }
-            List<ToumamentPlayer>toumamentPlayerList= toumamentPlayerRepository.findToumamentPlayerByStageAndToumament(stage,toumament);
+            List<ToumamentPlayer>toumamentPlayerList= toumamentPlayerRepository.findToumamentPlayerByIdStageAndToumament(stage,toumament);
             List<Player> playerList =new ArrayList<>();
             toumamentPlayerList.forEach(toumamentPlayer -> {
                 Player player= playerRepository.findById(toumamentPlayer.getIdWinPlayer()).orElseThrow(() ->

@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name="T_TOUMAMENT_PLAYER")
+@Table(name="t_toumament_player")
 @Data
 public class ToumamentPlayer {
     @Id
@@ -17,13 +17,14 @@ public class ToumamentPlayer {
     @JoinColumn(name="idtoumament")
     private Toumament toumament;
     @JoinColumn(name="idstage")
-    private Integer stage;
+    private Integer idStage;
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="idplayer1")
     private Player player1;
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="idplayer2")
     private Player player2;
+    @Column(name="idwinplayer")
     private Integer idWinPlayer;
     @Column(name="localresult")
     private Integer localResult;

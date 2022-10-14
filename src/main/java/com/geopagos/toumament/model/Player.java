@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
-@Table(name="T_PLAYER")
+@Table(name="t_player")
 @Data
 public class Player {
     @Id

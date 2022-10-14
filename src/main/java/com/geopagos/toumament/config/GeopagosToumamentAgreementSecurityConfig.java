@@ -50,7 +50,7 @@ public class GeopagosToumamentAgreementSecurityConfig extends WebSecurityConfigu
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         httpSecurity.authorizeRequests()
-                .antMatchers(HttpMethod.POST,"/v1/toumaments-players").permitAll()
+                .antMatchers(HttpMethod.POST,"/v1/toumament-players/result").permitAll()
                 .anyRequest().authenticated();
         httpSecurity.exceptionHandling().accessDeniedHandler(accessDeniedHandler()).authenticationEntryPoint(authenticationEntryPoint());
 

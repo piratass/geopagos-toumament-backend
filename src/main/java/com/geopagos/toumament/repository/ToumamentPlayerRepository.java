@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface ToumamentPlayerRepository extends CrudRepository<ToumamentPlayer,Integer> {
 
-    List<ToumamentPlayer> findToumamentPlayerByStageAndToumament(Integer stage, Toumament toumament);
+    List<ToumamentPlayer> findToumamentPlayerByIdStageAndToumament(Integer stage, Toumament toumament);
 }
