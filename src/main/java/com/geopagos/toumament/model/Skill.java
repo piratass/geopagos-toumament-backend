@@ -19,7 +19,7 @@ public class Skill {
     @Column(name="nameskill")
     private String nameSkill;
     @Column(name="state")
-    private Integer state;
+    private Boolean state;
     @Column(name="registrationDate")
     private Date registrationDate;
 

@@ -15,10 +15,9 @@ public class ToumamentPlayer {
     private Integer idToumamentPlayer;
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="idtoumament")
-    private Toumament idToumament;
-    @ManyToOne(fetch=FetchType.LAZY)
+    private Toumament toumament;
     @JoinColumn(name="idstage")
-    private Stage idStage;
+    private Integer stage;
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="idplayer1")
     private Player player1;
@@ -31,7 +30,7 @@ public class ToumamentPlayer {
     @Column(name="visitresult")
     private Integer visitResult;
     @Column(name="state")
-    private Integer state;
+    private Boolean state;
     @Column(name="registrationDate")
     private Date registrationDate;
 }

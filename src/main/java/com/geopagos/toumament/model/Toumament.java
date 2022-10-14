@@ -15,13 +15,13 @@ public class Toumament {
     private Integer idToumament;
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="idGender")
-    private Gender idGender;
+    private Gender gender;
     @Column(name="code")
     private String code;
     @Column(name="nametoumament")
     private String nameToumament;
     @Column(name="state")
-    private Integer state;
+    private Boolean state;
     @Column(name="registrationDate")
     private Date registrationDate;
 }

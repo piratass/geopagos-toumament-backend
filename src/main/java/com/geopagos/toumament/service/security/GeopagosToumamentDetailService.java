@@ -2,7 +2,7 @@ package com.geopagos.toumament.service.security;
 
 import com.geopagos.toumament.dto.UserPrincipalDTO;
 import com.geopagos.toumament.errorhandler.GeopagosToumamentGenericClientException;
-import com.geopagos.toumament.util.C4fUtil;
+import com.geopagos.toumament.util.GeopagosToumamentUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class GeopagosToumamentDetailService implements UserDetailsService{
-    final C4fUtil pignoraticioUtil;
+    final GeopagosToumamentUtil pignoraticioUtil;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

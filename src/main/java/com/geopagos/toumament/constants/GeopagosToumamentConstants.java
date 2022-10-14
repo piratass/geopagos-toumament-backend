@@ -12,14 +12,16 @@ public class GeopagosToumamentConstants {
     public static final String UNAUTHORIZED = "002";
     public static final String NOT_FOUND = "004";
     public static final String CONFLICT = "009";
-
+    public static final String GENDER_MALE = "MASCULINO";
+    public static final String GENDER_FEMININE = "FEMENINO";
+    public static final String STAGE_CODE_COMPETENCIA = "COMPETENCIA";
+    public static final String STAGE_CODE_FINAL = "FINAL";
     // SERVER ERRORS
     public static final String INTERNAL_SERVER_ERROR = "001";
 
     public static final Boolean RESOURCE_ACTIVE= Boolean.TRUE;
 
-    //Areas
-    public static final String RESOURCE_AREAS = "/areas";
-    public static final String RESOURCE_AREA = "/area";
-    
+    public static final String RESOURCE_TOUMAMENT_PLAYERS = "/toumament-players";
+    public static final String RESOURCE_TOUMAMENT_PLAYERS_RESULT = "/result";
+
 }

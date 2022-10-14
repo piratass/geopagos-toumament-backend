@@ -22,7 +22,7 @@ public class Player {
     @Column(name="fullname")
     private String fullname;
     @Column(name="state")
-    private Integer state;
+    private Boolean state;
     @Column(name="registrationDate")
     private Date registrationDate;
 }

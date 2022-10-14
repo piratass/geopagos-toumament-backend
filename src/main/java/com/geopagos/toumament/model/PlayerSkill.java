@@ -24,7 +24,7 @@ public class PlayerSkill {
     @Column(name="description")
     private String description;
     @Column(name="state")
-    private Integer state;
+    private Boolean state;
     @Column(name="registrationDate")
     private Date registrationDate;
 }
