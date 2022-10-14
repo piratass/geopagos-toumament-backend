@@ -6,5 +6,5 @@ import com.geopagos.toumament.dto.PlayersDataRequestDTO;
 import java.util.List;
 
 public interface PlayerToumamentService {
-    PlayerResultResponseDTO playerResultWin(List<PlayersDataRequestDTO> listPlayersDataRequestDTO);
+    List<PlayerResultResponseDTO> playerResultWin(List<PlayersDataRequestDTO> listPlayersDataRequestDTO);
 }

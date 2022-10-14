@@ -1,6 +1,7 @@
 package com.geopagos.toumament.util;
 
 import com.geopagos.toumament.constants.GeopagosToumamentConstants;
+import com.geopagos.toumament.dto.PlayerResultResponseDTO;
 import com.geopagos.toumament.dto.PlayersDTO;
 import com.geopagos.toumament.dto.PlayersDataRequestDTO;
 import com.geopagos.toumament.errorhandler.GeopagosToumamentGenericServerException;
@@ -75,7 +76,7 @@ public class GeopagosToumamentUtil {
         playerDTO.setSkills(playerData.getSkills());
         return playerDTO;
     }
-    public ToumamentPlayer convertEntityToumament(Player player1,Player player2,Toumament toumament,Integer winResult,Integer stage,Double resultPlayer1,Double resultPlayer2 ){
+    public ToumamentPlayer convertEntityToumament(Player player1,Player player2,Toumament toumament,Integer winResult,Integer stage,Double resultPlayer1,Double resultPlayer2 ,Boolean isChampions){
         ToumamentPlayer toumamentPlayer =new ToumamentPlayer();
         toumamentPlayer.setPlayer1(player1);
         toumamentPlayer.setPlayer2(player2);
@@ -84,9 +85,18 @@ public class GeopagosToumamentUtil {
         toumamentPlayer.setState(GeopagosToumamentConstants.RESOURCE_ACTIVE);
         toumamentPlayer.setRegistrationDate(new Date());
         toumamentPlayer.setIdWinPlayer(winResult);
+        toumamentPlayer.setIsChampions(isChampions);
         toumamentPlayer.setLocalResult(resultPlayer1.intValue());
         toumamentPlayer.setVisitResult(resultPlayer2.intValue());
         return toumamentPlayer;
+    }
+
+    public PlayerResultResponseDTO convertWinPlayerResponse(ToumamentPlayer winPlayer,Player winPlayerEntity){
+        PlayerResultResponseDTO playerResultResponseDTO =new PlayerResultResponseDTO();
+        playerResultResponseDTO.setNamePlayerWin(winPlayerEntity.getFullname());
+        playerResultResponseDTO.setNameToumament(winPlayer.getToumament().getNameToumament());
+        playerResultResponseDTO.setDocumentNumber(winPlayerEntity.getDocumentNumber());
+        return playerResultResponseDTO;
     }
 
 

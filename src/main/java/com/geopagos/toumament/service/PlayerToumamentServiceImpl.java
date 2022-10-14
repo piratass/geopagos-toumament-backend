@@ -28,10 +28,7 @@ public class PlayerToumamentServiceImpl implements PlayerToumamentService{
     final StageRepository stageRepository;
     final ToumamentPlayerRepository toumamentPlayerRepository;
     @Override
-    public PlayerResultResponseDTO playerResultWin(List<PlayersDataRequestDTO> listPlayersDataRequestDTO) {
-        /*playerSkillRepository.deleteAll();
-        toumamentPlayerRepository.deleteAll();
-        playerRepository.deleteAll();*/
+    public List<PlayerResultResponseDTO> playerResultWin(List<PlayersDataRequestDTO> listPlayersDataRequestDTO) {
 
         List<PlayersDTO> listPlayersM =new ArrayList<>();
         List<PlayersDTO> listPlayersF =new ArrayList<>();
@@ -84,7 +81,7 @@ public class PlayerToumamentServiceImpl implements PlayerToumamentService{
         //operation win male and save table
         Gender genderMale= genderRepository.findGenderByCodeAndState(GeopagosToumamentConstants.GENDER_MALE, GeopagosToumamentConstants.RESOURCE_ACTIVE).orElseThrow(() ->
                 new GeopagosToumamentGenericClientException("Error  atribute Genger List Player"));
-        List<Player> listPlayerMale =playerRepository.findGenderByGenderAndState(genderMale,GeopagosToumamentConstants.RESOURCE_ACTIVE);
+        List<Player> listPlayerMale =playerRepository.findPlayerByGenderAndState(genderMale,GeopagosToumamentConstants.RESOURCE_ACTIVE);
         Toumament toumamentMale =toumamentRepository.findToumamentByGenderAndState(genderMale,GeopagosToumamentConstants.RESOURCE_ACTIVE).orElseThrow(() ->
                 new GeopagosToumamentGenericClientException("Error  atribute Genger List Player"));
         //execute Match
@@ -93,13 +90,31 @@ public class PlayerToumamentServiceImpl implements PlayerToumamentService{
         //operation win feminile and save table
         Gender genderFeminile= genderRepository.findGenderByCodeAndState(GeopagosToumamentConstants.GENDER_FEMININE, GeopagosToumamentConstants.RESOURCE_ACTIVE).orElseThrow(() ->
                 new GeopagosToumamentGenericClientException("Error  atribute Genger List Player"));
-        List<Player> listPlayerFeminile =playerRepository.findGenderByGenderAndState(genderFeminile,GeopagosToumamentConstants.RESOURCE_ACTIVE);
+        List<Player> listPlayerFeminile =playerRepository.findPlayerByGenderAndState(genderFeminile,GeopagosToumamentConstants.RESOURCE_ACTIVE);
         Toumament toumamentFeminile =toumamentRepository.findToumamentByGenderAndState(genderFeminile,GeopagosToumamentConstants.RESOURCE_ACTIVE).orElseThrow(() ->
                 new GeopagosToumamentGenericClientException("Error  atribute Genger List Player"));
         iterationPlayer(listPlayerFeminile,toumamentFeminile,1);
 
         //execute result data
-        return null;
+
+        //state data play
+        List<PlayerResultResponseDTO> listPlayerResultResponseDTO= new ArrayList<>();
+        playerRepository.findByState(GeopagosToumamentConstants.RESOURCE_ACTIVE).forEach(playerUpdate->{
+            playerUpdate.setState(Boolean.FALSE);
+            playerRepository.save(playerUpdate);
+        });
+        toumamentPlayerRepository.findToumamentPlayerByState(GeopagosToumamentConstants.RESOURCE_ACTIVE).forEach(toumamentPlayerState->{
+            toumamentPlayerState.setState(Boolean.FALSE);
+            toumamentPlayerRepository.save(toumamentPlayerState);
+        });
+
+        List<ToumamentPlayer>listToumamentPlayer=toumamentPlayerRepository.findToumamentPlayerByIsChampions(Boolean.TRUE);
+        listToumamentPlayer.forEach(winPlayer->{
+           Player winPlayerEntity= playerRepository.findById(winPlayer.getIdWinPlayer()).orElseThrow(() ->
+                   new GeopagosToumamentGenericClientException("Error  atribute Genger List Player"));;
+            listPlayerResultResponseDTO.add(geopagosToumamentUtil.convertWinPlayerResponse(winPlayer,winPlayerEntity));
+        });
+        return listPlayerResultResponseDTO;
     }
 
     public void iterationPlayer(List<Player> listPlayer,Toumament toumament,Integer stage){
@@ -119,13 +134,13 @@ public class PlayerToumamentServiceImpl implements PlayerToumamentService{
 
             if(resultPlayer1>resultPlayer2)
             {
-                toumamentPlayerRepository.save(geopagosToumamentUtil.convertEntityToumament(player1,player2,toumament,player1.getIdPlayer(),stage,resultPlayer1,resultPlayer2));
+                toumamentPlayerRepository.save(geopagosToumamentUtil.convertEntityToumament(player1,player2,toumament,player1.getIdPlayer(),stage,resultPlayer1,resultPlayer2,Boolean.TRUE));
 
             }else if(resultPlayer1==resultPlayer2){
-                toumamentPlayerRepository.save(geopagosToumamentUtil.convertEntityToumament(player1,player2,toumament,player2.getIdPlayer(),stage,resultPlayer1,resultPlayer2));
+                toumamentPlayerRepository.save(geopagosToumamentUtil.convertEntityToumament(player1,player2,toumament,player2.getIdPlayer(),stage,resultPlayer1,resultPlayer2,Boolean.TRUE));
             }
             else {
-                toumamentPlayerRepository.save(geopagosToumamentUtil.convertEntityToumament(player1,player2,toumament,player2.getIdPlayer(),stage,resultPlayer1,resultPlayer2));
+                toumamentPlayerRepository.save(geopagosToumamentUtil.convertEntityToumament(player1,player2,toumament,player2.getIdPlayer(),stage,resultPlayer1,resultPlayer2,Boolean.TRUE));
             }
         }
 
@@ -143,17 +158,17 @@ public class PlayerToumamentServiceImpl implements PlayerToumamentService{
 
                 if(resultPlayer1>resultPlayer2)
                 {
-                    toumamentPlayerRepository.save(geopagosToumamentUtil.convertEntityToumament(player1,player2,toumament,player1.getIdPlayer(),stage,resultPlayer1,resultPlayer2));
+                    toumamentPlayerRepository.save(geopagosToumamentUtil.convertEntityToumament(player1,player2,toumament,player1.getIdPlayer(),stage,resultPlayer1,resultPlayer2,Boolean.FALSE));
 
                 }else if(resultPlayer1==resultPlayer2){
-                    toumamentPlayerRepository.save(geopagosToumamentUtil.convertEntityToumament(player1,player2,toumament,player2.getIdPlayer(),stage,resultPlayer1,resultPlayer2));
+                    toumamentPlayerRepository.save(geopagosToumamentUtil.convertEntityToumament(player1,player2,toumament,player2.getIdPlayer(),stage,resultPlayer1,resultPlayer2,Boolean.FALSE));
                 }
                 else {
-                    toumamentPlayerRepository.save(geopagosToumamentUtil.convertEntityToumament(player1,player2,toumament,player2.getIdPlayer(),stage,resultPlayer1,resultPlayer2));
+                    toumamentPlayerRepository.save(geopagosToumamentUtil.convertEntityToumament(player1,player2,toumament,player2.getIdPlayer(),stage,resultPlayer1,resultPlayer2,Boolean.FALSE));
                 }
                 contPlayerFixture=contPlayerFixture+1;
             }
-            List<ToumamentPlayer>toumamentPlayerList= toumamentPlayerRepository.findToumamentPlayerByIdStageAndToumament(stage,toumament);
+            List<ToumamentPlayer>toumamentPlayerList= toumamentPlayerRepository.findToumamentPlayerByIdStageAndToumamentAndState(stage,toumament,GeopagosToumamentConstants.RESOURCE_ACTIVE);
             List<Player> playerList =new ArrayList<>();
             toumamentPlayerList.forEach(toumamentPlayer -> {
                 Player player= playerRepository.findById(toumamentPlayer.getIdWinPlayer()).orElseThrow(() ->

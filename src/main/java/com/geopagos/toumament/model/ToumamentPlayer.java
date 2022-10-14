@@ -30,6 +30,8 @@ public class ToumamentPlayer {
     private Integer localResult;
     @Column(name="visitresult")
     private Integer visitResult;
+    @Column(name="ischampions")
+    private Boolean isChampions;
     @Column(name="state")
     private Boolean state;
     @Column(name="registrationDate")

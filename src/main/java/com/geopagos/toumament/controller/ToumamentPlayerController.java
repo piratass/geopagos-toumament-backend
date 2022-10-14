@@ -16,7 +16,7 @@ import java.util.List;
 public class ToumamentPlayerController {
     final PlayerToumamentService playerToumamentService;
     @PostMapping(GeopagosToumamentConstants.RESOURCE_TOUMAMENT_PLAYERS_RESULT)
-    public PlayerResultResponseDTO playerResultWin(@Valid @RequestBody List<PlayersDataRequestDTO> listPlayersDataRequestDTO) {
+    public List<PlayerResultResponseDTO> playerResultWin(@Valid @RequestBody List<PlayersDataRequestDTO> listPlayersDataRequestDTO) {
            return playerToumamentService.playerResultWin(listPlayersDataRequestDTO);
     }
 }

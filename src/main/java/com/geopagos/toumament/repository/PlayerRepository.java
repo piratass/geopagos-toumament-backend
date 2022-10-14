@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface PlayerRepository extends CrudRepository<Player,Integer> {
-    List<Player> findGenderByGenderAndState(Gender gender, Boolean state);
+    List<Player> findPlayerByGenderAndState(Gender gender, Boolean state);
+    List<Player> findByState(Boolean state);
 
 }
